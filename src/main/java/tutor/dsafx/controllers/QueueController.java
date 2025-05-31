@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class QueueController {
+public class QueueController extends BaseController {
 
     @FXML
     private TextField inputField;
@@ -42,12 +42,9 @@ public class QueueController {
         }
     }
 
-    @FXML
-    protected void onBack(ActionEvent event) throws IOException {
-        SceneSwitcher.switchTo(event, "hello-view.fxml");
-    }
 
-    private void updateDisplay() {
+    @Override
+    protected void updateDisplay() {
         queueDisplay.setText("Queue: " + queue);
     }
 }

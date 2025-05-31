@@ -4,15 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import tutor.dsafx.util.SceneSwitcher;
-
-import java.io.IOException;
-
-public class LinkedListController {
+public class LinkedListController extends BaseController {
 
     @FXML
     private TextField inputField;
@@ -21,6 +13,23 @@ public class LinkedListController {
     private Label linkedListDisplay;
 
     private Node head = null;
+
+    @Override
+    protected void updateDisplay() {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Linked List: ");
+        Node current = head;
+        while (current != null) {
+            sb.append(current.data);
+            if (current.next != null) {
+                sb.append(" -> ");
+            }
+            current = current.next;
+        }
+        linkedListDisplay.setText(sb.toString());
+
+    }
 
     private static class Node {
         String data;
@@ -58,22 +67,7 @@ public class LinkedListController {
         }
     }
 
-    @FXML
-    protected void onBack(ActionEvent event) throws IOException {
-        SceneSwitcher.switchTo(event, "hello-view.fxml");
-    }
 
-    private void updateDisplay() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Linked List: ");
-        Node current = head;
-        while (current != null) {
-            sb.append(current.data);
-            if (current.next != null) {
-                sb.append(" -> ");
-            }
-            current = current.next;
-        }
-        linkedListDisplay.setText(sb.toString());
-    }
+
+
 }

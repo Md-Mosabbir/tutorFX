@@ -4,15 +4,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.util.Stack;
 
-public class StackController {
+public class StackController extends BaseController {
 
     @FXML
     private TextField inputField;
@@ -40,15 +35,10 @@ public class StackController {
         }
     }
 
-    @FXML
-    protected void onBack(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/tutor/dsafx/views/hello-view.fxml"));
-        Scene scene = new Scene(loader.load());
-        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        stage.setScene(scene);
-    }
 
-    private void updateDisplay() {
+
+    @Override
+    protected void updateDisplay() {
         stackDisplay.setText("Stack: " + stack);
     }
 }

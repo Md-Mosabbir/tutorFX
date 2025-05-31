@@ -4,6 +4,7 @@ import javafx.animation.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -17,7 +18,9 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class SortingController {
+public class SortingController extends BaseController {
+
+
 
     @FXML
     private TextField inputField;
@@ -36,8 +39,9 @@ public class SortingController {
 
     private int[] numbers;
 
-    private static final Duration STEP_DURATION = Duration.millis(600);
-    private static final Duration SWAP_DURATION = Duration.millis(500);
+    private static final Duration STEP_DURATION = Duration.millis(800);  // Increased duration
+    private static final Duration SWAP_DURATION = Duration.millis(700);  // Increased duration
+    private static final Interpolator SMOOTH_INTERPOLATOR = Interpolator.SPLINE(0.25, 0.1, 0.25, 1);
 
     private ObservableList<String> steps = FXCollections.observableArrayList();
 
@@ -108,11 +112,18 @@ public class SortingController {
             VBox vbox = new VBox(5, rect, text);
             vbox.setMinWidth(30);
             vbox.setMaxWidth(30);
-            vbox.setStyle("-fx-alignment: center;");
+            vbox.setStyle("-fx-alignment: bottom-center;");  // Changed from center to bottom-center
+
+            // Set VBox to fill available height and align children at bottom
+            VBox.setVgrow(rect, Priority.ALWAYS);
+            vbox.setFillWidth(true);
 
             barContainers[i] = vbox;
             arrayPane.getChildren().add(vbox);
         }
+
+        // Ensure the HBox aligns its children at the bottom
+        arrayPane.setAlignment(Pos.BOTTOM_CENTER);
     }
 
     private void animateBubbleSort(int[] arr) {
@@ -232,7 +243,15 @@ public class SortingController {
     private void quickSortHelper(int[] arr, int low, int high, SequentialTransition seq) {
         if (low < high) {
             int pi = partition(arr, low, high, seq);
+
+            // Add small delay between recursive calls
+            seq.getChildren().add(new PauseTransition(Duration.millis(100)));
+
             quickSortHelper(arr, low, pi - 1, seq);
+
+            // Add small delay between recursive calls
+            seq.getChildren().add(new PauseTransition(Duration.millis(100)));
+
             quickSortHelper(arr, pi + 1, high, seq);
         }
     }
@@ -287,47 +306,73 @@ public class SortingController {
     }
 
     private Animation createSwapTransition(int i, int j) {
+        // Early return if indices are the same
+        if (i == j) {
+            return new PauseTransition(Duration.ZERO);
+        }
+
         VBox vboxA = barContainers[i];
         VBox vboxB = barContainers[j];
 
         double distance = (j - i) * (vboxA.getWidth() + arrayPane.getSpacing());
 
+        // Create smooth translate transitions
         TranslateTransition ttA = new TranslateTransition(SWAP_DURATION, vboxA);
         ttA.setByX(distance);
+        ttA.setInterpolator(SMOOTH_INTERPOLATOR);
 
         TranslateTransition ttB = new TranslateTransition(SWAP_DURATION, vboxB);
         ttB.setByX(-distance);
+        ttB.setInterpolator(SMOOTH_INTERPOLATOR);
 
-        ParallelTransition pt = new ParallelTransition(ttA, ttB);
+        // Add slight vertical movement for more natural effect
+        TranslateTransition ttAUp = new TranslateTransition(Duration.millis(SWAP_DURATION.toMillis()/2), vboxA);
+        ttAUp.setByY(-20);
+        ttAUp.setAutoReverse(true);
+        ttAUp.setCycleCount(2);
+        ttAUp.setInterpolator(SMOOTH_INTERPOLATOR);
 
+        TranslateTransition ttBUp = new TranslateTransition(Duration.millis(SWAP_DURATION.toMillis()/2), vboxB);
+        ttBUp.setByY(-20);
+        ttBUp.setAutoReverse(true);
+        ttBUp.setCycleCount(2);
+        ttBUp.setInterpolator(SMOOTH_INTERPOLATOR);
 
+        ParallelTransition pt = new ParallelTransition(ttA, ttB, ttAUp, ttBUp);
 
         pt.setOnFinished(e -> {
-            // Reset translation
+            // Reset translations
             vboxA.setTranslateX(0);
             vboxB.setTranslateX(0);
+            vboxA.setTranslateY(0);
+            vboxB.setTranslateY(0);
 
-            // Get the list of children
+            // Update the barContainers array first
+            VBox tempVbox = barContainers[i];
+            barContainers[i] = barContainers[j];
+            barContainers[j] = tempVbox;
+
+            // Get current positions in the HBox
             ObservableList<Node> children = arrayPane.getChildren();
-
-            // Get the current indices BEFORE removal
             int indexA = children.indexOf(vboxA);
             int indexB = children.indexOf(vboxB);
 
-            // Remove both
-            children.remove(vboxA);
-            children.remove(vboxB);
+            // Only proceed if both elements are found and need to be swapped
+            if (indexA >= 0 && indexB >= 0 && indexA != indexB) {
+                // Remove both elements
+                children.remove(vboxA);
+                children.remove(vboxB);
 
-            // Reinsert in swapped positions
-            if (indexA < indexB) {
-                children.add(indexA, vboxB);
-                children.add(indexB, vboxA);
-            } else {
-                children.add(indexB, vboxA);
-                children.add(indexA, vboxB);
+                // Reinsert in swapped positions
+                if (indexA < indexB) {
+                    children.add(indexA, vboxB);
+                    children.add(indexB, vboxA);
+                } else {
+                    children.add(indexB, vboxA);
+                    children.add(indexA, vboxB);
+                }
             }
         });
-
 
         return pt;
     }
@@ -337,6 +382,7 @@ public class SortingController {
         Rectangle rect = (Rectangle) vbox.getChildren().get(0);
 
         FillTransition ft = new FillTransition(STEP_DURATION, rect, (Color) rect.getFill(), color);
+        ft.setInterpolator(SMOOTH_INTERPOLATOR);
         return ft;
     }
 
@@ -347,10 +393,12 @@ public class SortingController {
         );
     }
 
-    @FXML
-    protected void onBack(ActionEvent event) throws IOException {
-        SceneSwitcher.switchTo(event, "hello-view.fxml");
+    @Override
+    protected void updateDisplay() {
+
     }
+
+
 
     // Helper class to run code during SequentialTransition
     private static class RunnableTransition extends Transition {
