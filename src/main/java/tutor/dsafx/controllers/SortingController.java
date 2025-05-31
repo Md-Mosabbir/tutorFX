@@ -300,6 +300,8 @@ public class SortingController {
 
         ParallelTransition pt = new ParallelTransition(ttA, ttB);
 
+
+
         pt.setOnFinished(e -> {
             // Reset translation
             vboxA.setTranslateX(0);
