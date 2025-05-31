@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tutor.dsafx.HelloController"
+      stylesheets="@style.css">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <GridPane fx:id="buttonGrid" alignment="CENTER" hgap="20" vgap="20">
+        <Button text="Stack" onAction="#goToStackScene" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="apple-button"/>
+        <Button text="Queue" onAction="#goToQueueScene" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="apple-button"/>
+        <Button text="Linked List" onAction="#goToLinkedListScene" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="apple-button"/>
+        <Button text="Sorting" onAction="#goToSortingScene" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="apple-button"/>
+    </GridPane>
+</VBox>

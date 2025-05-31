@@ -1,0 +1,32 @@
+.apple-button {
+    -fx-font-size: 18px;
+    -fx-font-weight: 600;
+    -fx-text-fill: white;
+    -fx-background-color: linear-gradient(to bottom, #007AFF, #0051A8);
+    -fx-background-radius: 10;
+    -fx-padding: 20 40;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.25), 5, 0, 0, 4);
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease;
+}
+
+.apple-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #339CFF, #0060D4);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+
+.stack-display {
+    -fx-font-size: 16px;
+    -fx-text-fill: #333;
+    -fx-padding: 10;
+}
+
+.back-button {
+    -fx-font-size: 14px;
+    -fx-background-color: transparent;
+    -fx-text-fill: #007AFF;
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
